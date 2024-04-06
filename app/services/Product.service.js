@@ -1,23 +1,23 @@
 const Product = require("../models/ProductModel");
 
 // Add product
-const addProduct = async (data) => {
+const addProduct = (data) => {
   return new Promise(async (resolve, reject) => {
     const { Name, Image, Price, Category } = data;
 
     try {
-      const ProductMoi = await Product.create({
+      const NewProduct = await Product.create({
         Name,
         Image,
         Price,
         Category,
       });
 
-      if (ProductMoi) {
+      if (NewProduct) {
         resolve({
           status: "OK",
           message: "Added new product successfully",
-          data: ProductMoi,
+          data: NewProduct,
         });
       }
     } catch (e) {

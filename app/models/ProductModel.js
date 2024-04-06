@@ -6,10 +6,9 @@ const ProductSchema = new mongoose.Schema(
     Image: { type: String, default: null },
     Price: { type: Number, required: true },
     Category: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
-      enum: ["Adidas", "Nike", "Others"],
-      default: "Others",
     },
   },
   {
