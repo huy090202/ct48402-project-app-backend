@@ -11,6 +11,7 @@ const addProduct = (data) => {
         Image,
         Price,
         Category,
+        Description,
       });
 
       if (NewProduct) {

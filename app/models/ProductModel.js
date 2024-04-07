@@ -10,6 +10,7 @@ const ProductSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
+    Description: { type: String, default: null },
   },
   {
     timestamps: true,
