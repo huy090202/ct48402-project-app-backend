@@ -88,10 +88,7 @@ const getAllProduct = (productId) => {
     try {
       let allProduct = "";
       if (productId && productId === "All") {
-        allProduct = await Product.find({}).sort({
-          createdAt: -1,
-          updatedAt: -1,
-        });
+        allProduct = await Product.find({});
       }
 
       if (productId && productId !== "All") {
