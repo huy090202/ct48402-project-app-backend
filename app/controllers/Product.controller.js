@@ -59,6 +59,24 @@ const detailProduct = async (req, res) => {
   }
 };
 
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "The product ID is required",
+      });
+    }
+
+    const response = await ProductService.deleteProduct(id);
+    return res.status(200).json(response);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 // Get all product
 const getAllProduct = async (req, res) => {
   try {
@@ -79,4 +97,29 @@ const getAllProduct = async (req, res) => {
   }
 };
 
-module.exports = { addProduct, updateProduct, detailProduct, getAllProduct };
+const getProductByCategory = async (req, res) => {
+  try {
+    const categoryProduct = req.query.Category;
+    if (!categoryProduct) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "The type is required",
+        getProductByCategory: [],
+      });
+    }
+    const response = await ProductService.getProductByCategory(categoryProduct);
+    return res.status(200).json(response);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+module.exports = {
+  addProduct,
+  updateProduct,
+  detailProduct,
+  getAllProduct,
+  getProductByCategory,
+  deleteProduct,
+};
