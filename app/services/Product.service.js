@@ -1,4 +1,5 @@
 const Product = require("../models/ProductModel");
+const CategoryModel = require("../models/CategoryModel");
 
 // Add product
 const addProduct = (data) => {
@@ -6,19 +7,27 @@ const addProduct = (data) => {
     const { Name, Image, Price, Category, Description } = data;
 
     try {
-      const NewProduct = await Product.create({
+      // Tìm category trong cơ sở dữ liệu dựa trên tên
+      let existingCategory = await CategoryModel.findOne({ Name: Category });
+
+      // Nếu category không tồn tại, tạo mới
+      if (!existingCategory) {
+        existingCategory = await CategoryModel.create({ Name: Category });
+      }
+
+      const newProduct = await Product.create({
         Name,
         Image,
         Price,
-        Category,
+        Category: existingCategory._id,
         Description,
       });
 
-      if (NewProduct) {
+      if (newProduct) {
         resolve({
           status: "OK",
           message: "Added new product successfully",
-          data: NewProduct,
+          data: newProduct,
         });
       }
     } catch (e) {
@@ -31,6 +40,24 @@ const addProduct = (data) => {
 const updateProduct = (productId, data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      // Kiểm tra nếu category được cung cấp
+      if (data.Category) {
+        // Tìm category trong cơ sở dữ liệu dựa trên tên
+        let existingCategory = await CategoryModel.findOne({
+          Name: data.Category,
+        });
+
+        // Nếu category không tồn tại, tạo mới
+        if (!existingCategory) {
+          existingCategory = await CategoryModel.create({
+            Name: data.Category,
+          });
+        }
+
+        // Thay thế tên của category bằng ID của nó trong dữ liệu cập nhật
+        data.Category = existingCategory._id;
+      }
+
       const UpdatedProduct = await Product.findOneAndUpdate(
         { _id: productId },
         data,
@@ -43,7 +70,7 @@ const updateProduct = (productId, data) => {
       if (!UpdatedProduct) {
         resolve({
           status: "ERROR",
-          message: "The product ID is not exist",
+          message: "The product ID does not exist",
         });
       }
 
