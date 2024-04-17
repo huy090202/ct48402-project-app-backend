@@ -1,5 +1,6 @@
 const User = require("../models/UserModel");
 const bcrypt = require("bcrypt");
+const { genneralAccessToken } = require("./Jwt.service");
 
 // Sign up
 const signUp = (data) => {
@@ -29,7 +30,6 @@ const signUp = (data) => {
         Email,
         Name,
         Password: hash,
-        ConfirmPassword,
       });
 
       if (NewUser) {
@@ -46,7 +46,7 @@ const signUp = (data) => {
 };
 
 // Sign in
-const signIn = (data, res) => {
+const signIn = (data) => {
   return new Promise(async (resolve, reject) => {
     const { Email, Password } = data;
 
@@ -66,14 +66,18 @@ const signIn = (data, res) => {
           status: "ERROR",
           message: "The password or user is incorrect",
         });
-      } else {
-        res.cookie("token", CheckUser._id, { httpOnly: true });
-        resolve({
-          status: "OK",
-          message: "Đăng nhập thành công",
-          data: CheckUser,
-        });
       }
+
+      const access_token = await genneralAccessToken({
+        id: CheckUser.id,
+      });
+
+      resolve({
+        status: "OK",
+        message: "Đăng nhập thành công",
+        access_token,
+        data: CheckUser,
+      });
     } catch (e) {
       reject(e);
     }

@@ -1,4 +1,5 @@
 const UserService = require("../services/User.service");
+const jwtService = require("../services/Jwt.service");
 
 // Sign up
 const signUp = async (req, res) => {
@@ -51,8 +52,13 @@ const signIn = async (req, res) => {
       });
     }
 
-    const response = await UserService.signIn(req.body, res);
-    return res.status(200).json(response);
+    const response = await UserService.signIn(req.body);
+
+    const { access_token, ...newResponse } = response;
+    res.cookie("access_token", access_token, {
+      httpOnly: true,
+    });
+    return res.status(200).json({ ...newResponse, access_token });
   } catch (e) {
     console.log(e);
     res.status(500).json({ message: "Internal Server Error" });
@@ -62,7 +68,7 @@ const signIn = async (req, res) => {
 // Logout
 const logOut = (res) => {
   try {
-    res.clearCookie("token");
+    res.clearCookie("access_token");
     return {
       status: "OK",
       message: "Logout successfully",
